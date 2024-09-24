@@ -4,6 +4,7 @@ from sqlalchemy.orm import sessionmaker
 from app.models import Base, Band, Venue, Concert
 
 
+
 @pytest.fixture(scope="module")
 def session():
     # create an in-memory SQLite database for testing
@@ -42,4 +43,24 @@ def create_sample_data(session):
         "concert2":concert2,
         "concert3":concert3
     }
+
+def test_band_concerts(session, create_sample_data):
+    band1 = create_sample_data["band1"]
+    venue1 = create_sample_data["venue1"]
+
+    #Band plays at the same venue again
+    band1.play_in_venue(venue1, "2024-04-01")
+    session.commit()
+
+    assert len(band1.concerts()) == 3
+
+def test_band_all_introductions(session, create_sample_data):
+    band1 = create_sample_data["band1"]
+    introductions = band1.all_introductions()
+    assert len(introductions) == 2
+    assert introductions[0] == "Hello New York !!!!! We are The Beatles and we're from Liverpool"
+
+def test_band_most_performances(session, create_sample_data):
+    band_most_performances = Band.most_performances()
+    assert band_most_performances.name == "The Beatles"
 
