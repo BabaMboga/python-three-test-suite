@@ -38,3 +38,29 @@ class Venue(Base):
     
     def bands(self):
         return list({concert.band for concert in self.concerts})
+    
+    def concert_on(self, date):
+        return session.query(Concert).filter_by(venue_id=self.id, date=date).first()
+    
+    def most_frequent_band(self):
+        bands = {concert.band for concert in self.concerts}
+        return max(bands, key=lambda band:len(band.concerts))
+    
+class Concert(Base):
+    __tablename__ = 'concerts'
+    id = Column(Integer, primary_key=True)
+    band_id = Column(Integer, ForeignKey('bands.id'))
+    venue_id = Column(Integer, ForeignKey('venues.id'))
+    date = Column(String)
+
+    def band(self):
+        return self.band
+    
+    def venue(self):
+        return self.venue
+
+    def hometown_show(self):
+        return self.venue.city == self.band.hometown
+
+    def introduction(self):
+        return f"Hello {self.venue.city} !!!! We are {self.band.name} and we're from {self.band.hometown}"
