@@ -3,8 +3,6 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from app.models import Base, Band, Venue, Concert
 
-
-
 @pytest.fixture(scope="module")
 def session():
     # create an in-memory SQLite database for testing
@@ -17,12 +15,11 @@ def session():
 
 @pytest.fixture
 def create_sample_data(session):
-    #sample data for tests
-
+    # sample data for tests
     band1 = Band(name="The Beatles", hometown="Liverpool")
-    band2 = Band(name= "The Rolling Stone", hometown="London")
+    band2 = Band(name="The Rolling Stones", hometown="London")
     venue1 = Venue(title="Madison Square Garden", city="New York")
-    venue2 = Venue(title="The 02", city="London")
+    venue2 = Venue(title="The O2", city="London")
 
     session.add_all([band1, band2, venue1, venue2])
     session.commit()
@@ -35,30 +32,30 @@ def create_sample_data(session):
     session.commit()
 
     return {
-        "band1":band1,
-        "band2":band2,
-        "venue1":venue1,
-        "venue2":venue2,
-        "concert1":concert1,
-        "concert2":concert2,
-        "concert3":concert3
+        "band1": band1,
+        "band2": band2,
+        "venue1": venue1,
+        "venue2": venue2,
+        "concert1": concert1,
+        "concert2": concert2,
+        "concert3": concert3
     }
 
 def test_band_concerts(session, create_sample_data):
     band1 = create_sample_data["band1"]
     venue1 = create_sample_data["venue1"]
 
-    #Band plays at the same venue again
+    # Band plays at the same venue again
     band1.play_in_venue(venue1, "2024-04-01")
     session.commit()
 
-    assert len(band1.concerts()) == 3
+    assert len(band1.get_concerts()) == 3
 
 def test_band_all_introductions(session, create_sample_data):
     band1 = create_sample_data["band1"]
     introductions = band1.all_introductions()
     assert len(introductions) == 2
-    assert introductions[0] == "Hello New York !!!!! We are The Beatles and we're from Liverpool"
+    assert introductions[0] == "Hello New York!!!!! We are The Beatles and we're from Liverpool"
 
 def test_band_most_performances(session, create_sample_data):
     band_most_performances = Band.most_performances()
@@ -66,7 +63,7 @@ def test_band_most_performances(session, create_sample_data):
 
 def test_venue_concerts(session, create_sample_data):
     venue1 = create_sample_data["venue1"]
-    assert len(venue1.concerts())
+    assert len(venue1.get_concerts()) == 1
 
 def test_venue_bands(session, create_sample_data):
     venue2 = create_sample_data["venue2"]
@@ -84,19 +81,19 @@ def test_venue_most_frequent_band(session, create_sample_data):
 
 def test_concert_band(session, create_sample_data):
     concert1 = create_sample_data["concert1"]
-    assert concert1.band().name == "The Beatles"
+    assert concert1.band.name == "The Beatles"
 
-def test_concern_venue(session, create_sample_data):
+def test_concert_venue(session, create_sample_data):
     concert1 = create_sample_data["concert1"]
-    assert concert1.venue().title == "Madison Square Garden"
+    assert concert1.venue.title == "Madison Square Garden"
 
 def test_concert_hometown_show(session, create_sample_data):
     concert1 = create_sample_data["concert1"]
     concert2 = create_sample_data["concert2"]
 
-    #Not in the band's hometown
-    assert not concert1.hometown_show() 
-    #Band plays in its hometown
+    # Not in the band's hometown
+    assert not concert1.hometown_show()
+    # Band plays in its hometown
     assert concert2.hometown_show()
 
 def test_concert_introduction(session, create_sample_data):
