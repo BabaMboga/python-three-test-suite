@@ -81,3 +81,25 @@ def test_venue_most_frequent_band(session, create_sample_data):
     venue2 = create_sample_data["venue2"]
     most_frequent_band = venue2.most_frequent_band()
     assert most_frequent_band.name == "The Beatles"
+
+def test_concert_band(session, create_sample_data):
+    concert1 = create_sample_data["concert1"]
+    assert concert1.band().name == "The Beatles"
+
+def test_concern_venue(session, create_sample_data):
+    concert1 = create_sample_data["concert1"]
+    assert concert1.venue().title == "Madison Square Garden"
+
+def test_concert_hometown_show(session, create_sample_data):
+    concert1 = create_sample_data["concert1"]
+    concert2 = create_sample_data["concert2"]
+
+    #Not in the band's hometown
+    assert not concert1.hometown_show() 
+    #Band plays in its hometown
+    assert concert2.hometown_show()
+
+def test_concert_introduction(session, create_sample_data):
+    concert1 = create_sample_data["concert1"]
+    intro = concert1.introduction()
+    assert intro == "Hello New York!!!!! We are The Beatles and we're from Liverpool"
