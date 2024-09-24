@@ -13,7 +13,7 @@ class Band(Base):
         return self.concerts
     
     def venues(self):
-        return list({concert.venue from concert in self.concerts})
+        return list({concert.venue for concert in self.concerts})
     
     def play_in_venue(self, venue, date):
         concert = Concert(band=self, venue=venue, date=date)
@@ -25,3 +25,16 @@ class Band(Base):
     @classmethod
     def most_performances(cls):
         return max(session.query(cls).all(), key=lambda band: len(band.concerts))
+    
+class Venue(Base):
+    __tablename__ = 'venues'
+    id = Column(Integer, primary_key=True)
+    title = Column(String, nullable=False)
+    city = Column(String, nullable=False)
+    concerts = relationship('Concert', backref='venue')
+
+    def concerts(self):
+        return self.concerts
+    
+    def bands(self):
+        return list({concert.band for concert in self.concerts})
