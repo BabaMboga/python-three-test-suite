@@ -64,3 +64,20 @@ def test_band_most_performances(session, create_sample_data):
     band_most_performances = Band.most_performances()
     assert band_most_performances.name == "The Beatles"
 
+def test_venue_concerts(session, create_sample_data):
+    venue1 = create_sample_data["venue1"]
+    assert len(venue1.concerts())
+
+def test_venue_bands(session, create_sample_data):
+    venue2 = create_sample_data["venue2"]
+    assert len(venue2.bands()) == 2
+
+def test_venue_concert_on(session, create_sample_data):
+    venue2 = create_sample_data["venue2"]
+    concert = venue2.concert_on("2024-02-01")
+    assert concert.band.name == "The Beatles"
+
+def test_venue_most_frequent_band(session, create_sample_data):
+    venue2 = create_sample_data["venue2"]
+    most_frequent_band = venue2.most_frequent_band()
+    assert most_frequent_band.name == "The Beatles"
